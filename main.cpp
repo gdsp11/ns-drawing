@@ -609,6 +609,11 @@ void DrawNS(node *t) {
             printf("draw basic ------ %s", t->line);
             DrawNS(t->below);
         }
+        else if (GetLineType(t->line) == 3) {
+            printf("draw for ------- %s", t->line);
+            Normal_Loop(startpx, startpy + L, CountConditions(t->left), L, X, Y, S);
+            DrawNS(t->below);
+        }
         else if (GetLineType(t->line) == 4) {
             printf("draw while ------- %s", t->line);
             Normal_Loop(startpx, startpy + L, CountConditions(t->left), L, X, Y, S);

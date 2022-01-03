@@ -1,0 +1,6 @@
+
+*.exe
+*.depend
+*.o
+*.o
+obj/Debug/main.o
