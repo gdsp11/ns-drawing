@@ -1,0 +1,24 @@
+
+int x
+x = x + 1
+printf ("hello world")
+
+while (x = 1)
+{
+    printf ("x is 1")
+    x = x + 1
+
+    if (x == 1)
+    {
+        printf ("if")
+    }
+
+    printf ("what is x?")
+}
+do
+{
+    printf ("lmao")
+    x = x + 1
+} while (x = 1)
+
+printf ("goodbye!")
