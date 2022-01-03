@@ -4,3 +4,4 @@
 *.o
 *.o
 obj/Debug/main.o
+*.cbp
