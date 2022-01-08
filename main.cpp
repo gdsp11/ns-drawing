@@ -6,6 +6,9 @@
 #include <math.h>
 using namespace std;
 
+void start();
+void info();
+
 int DIMX = 500;
 int DIMY=50,SPL=30,CT1=DIMX/2,CT2=DIMY/2;
 //declare dimensiuni initiale
@@ -131,22 +134,27 @@ void BranchingBlockL(int x,int y)
 
 //main menu
 int windowx=1680,windowy=1000;
-void menu()
+void menu(bool isInitial = false)
 {
-    settextstyle(4,0,4);
-    setbkcolor(WHITE);
-    setcolor(BLACK);
-
-    outtextxy(windowx/7,25,"Nassi-Schneiderman Diagram by Tudor Tescu & Fabian Pintea");
+    if (isInitial) {
+        settextstyle(4,0,4);
+        setbkcolor(WHITE);
+        setcolor(BLACK);
+    }
+    //setlinestyle(SOLID_LINE, 0, 1);
+    //rectangle(0, 0, windowx, 59);
+    setfillstyle(SOLID_FILL, WHITE);
+    settextstyle(0, 0, 3);
+    //outtextxy(windowx/7,25,"Nassi-Schneiderman Diagram by Tudor Tescu & Fabian Pintea");
 
     setlinestyle(1,1,2);
-    line(0,60,windowx,60);
+    //line(0,60,windowx,60);
 
-    line(windowx-550,65,windowx-550,windowy);
+    line(windowx-550,0,windowx-550,windowy);
     line(windowx-550,windowy-325,windowx,windowy-325);
     outtextxy(windowx-350,windowy-300,"INFO");
     //area where the node info should be shown is [windowx-550,windowy-280,windowx,windowy-280]
-    readimagefile("INFO.jpg",windowx-525,windowy-250,windowx-20,windowy-20);
+    readimagefile("images/INFO.jpg",windowx-525,windowy-250,windowx-20,windowy-20);
     //readimagefile("INFO.jpg",windowx-550,windowy-250,windowx,windowy);
 }
 
@@ -455,8 +463,6 @@ void ProcessBlock(int x,int y,int X,int &Y, int &L,node *t) {
     outtextxy(x+5,y+20,t->line);
     //y = Y;
     Y += 50;
-
-    //floodfill(x,y,WHITE);
 }
 
 void ProcessBlock_EMPTY(int x,int y,int X,int Y) {
@@ -499,7 +505,7 @@ void Normal_Loop(int x,int y,int conditions,int &L,int X,int Y,int S,node *t) {
     //floodfill(x,y,WHITE);
     //createarea(x,y,x+X,y+Y);
 
-    L = copyL;
+    //L = copyL;
 }
 
 void Reverse_Loop(int x,int y,int conditions,int &L,int X,int Y,int S,node *t) {
@@ -644,8 +650,8 @@ void BranchingBlock(int x,int y,int X,int &Y,int conditionsIF,int C1,int C2,int 
 void DrawNS(node *t) {
     printf("X %d    Y %d\n", X, Y);
 
+    menu(true);
     legenda(L);
-    menu();
     int S = SPL,C1=CT1,C2=CT2;
     settextstyle(1,0,1);
     if (t) {
@@ -684,6 +690,7 @@ void DrawNS(node *t) {
             DrawNS(t->below);
         }
     }
+    menu();
 }
 
 void ResetCoord() {
@@ -692,11 +699,31 @@ void ResetCoord() {
     L = 0;
 }
 
-int main()
-{
+void opening() {
+    cleardevice();
+    setfillstyle(SOLID_FILL, WHITE);
+    setbkcolor(GREEN);
+    floodfill(0, 0, WHITE);
+    setcolor(WHITE);
+    readimagefile("images/opening.jpg", 0, 0, windowx, windowy);
+    settextstyle(6, 0, 6);
+
+    //introduceti o diagrama
+    //rectangle(300, 100, 1380, 300);
+    outtextxy(1380/2 - 18*5, 170, "Introduceti un cod");
+
+    //diagrama anterioara
+    //rectangle(300, 400, 1380, 600);
+    outtextxy(1380/2 - 60, 470, "Codul anterior");
+
+    //curiozitati
+    //rectangle(300, 700, 1380, 900);
+    outtextxy(1380/2 - 20, 770, "Curiozitati");
+
+}
+
+void InitAlg() {
     int C1=CT1,C2=CT2,S=SPL;
-    system("notepad.exe input.txt");
-    initwindow(windowx,windowy);
     FILE *input = fopen("input.txt", "r");
     floodfill(0,0,WHITE);
     //menu();
@@ -836,6 +863,7 @@ int main()
         //printf("\n\n");
     }
     //getchar();
+    fclose(input);
     printf("\n\n\n///////////////////////////////\n\n\n\n");
     //printing the tokens
     //system("clear");
@@ -980,7 +1008,8 @@ int main()
 
         int dif = 50;
         if (mouseX >= 970 && mouseX <= 1040 && mouseY >= 760 && mouseY <= 830) { //up
-            startpy -= dif;
+            //if (startpy - dif > 99)
+                startpy -= dif;
             printf("pressed UP  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
             ResetCoord();
@@ -1013,15 +1042,18 @@ int main()
             continue;
         }
         else if (mouseX >= 1050 && mouseY >= 840 && mouseX <= 1120 && mouseY <= 910) { //right
-            startpx += dif;
-            printf("pressed RIGHT  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
-            cleardevice();
-            ResetCoord();
-            DrawNS(treeTop);
-            continue;
+            if (startpx < 200) {
+                startpx += dif;
+                printf("pressed RIGHT  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
+                cleardevice();
+                ResetCoord();
+                DrawNS(treeTop);
+                continue;
+            }
         }
         else if (mouseX >= 1070 && mouseY >= 70 && mouseX <= 1120 && mouseY <= 120) { //exit
-            exit(0);
+            cleardevice();
+            start();
         }
 
         if (mouseX != -1) {
@@ -1031,6 +1063,72 @@ int main()
 
     getch();
     closegraph();
+}
+
+void start() {
+    ResetCoord();
+    delete treeTop;
+    k = 0;
+    crtLine = 0;
+    totalLine = codeLine = commentLine = 0;
+
+
+    opening();
+
+    bool isExit = false;
+    while (!isExit) {
+        int mouseX = 0;
+        int mouseY = 0;
+
+        getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
+        if (mouseX >= 300 && mouseX <= 1380) {
+            if (mouseY >= 100 && mouseY <= 300) {
+                system("notepad.exe input.txt");
+                cleardevice();
+                InitAlg();
+            }
+            else if (mouseY >= 400 && mouseY <= 600) {
+                cleardevice();
+                InitAlg();
+            }
+            else if (mouseY >= 700 && mouseY <= 900) {
+                info();
+            }
+        }
+    }
+    getch();
+}
+
+void info() {
+    cleardevice();
+    setfillstyle(SOLID_FILL, WHITE);
+    setbkcolor(GREEN);
+    floodfill(0, 0, WHITE);
+    setcolor(WHITE);
+    readimagefile("images/about.jpg", 0, 0, windowx, windowy);
+
+    bool isBack = false;
+    while (!isBack) {
+        int mouseX = 0;
+        int mouseY = 0;
+        getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
+
+        if (mouseX >= 35 && mouseX <= 155 && mouseY >= 850 && mouseY <= 970) {
+            cleardevice();
+            start();
+        }
+    }
+
+    //floodfill(125, 60, BLACK);
+    //floodfill(60, 100, BLACK);
+
+
+}
+int main()
+{
+    initwindow(windowx, windowy, "Nassi-Schneiderman Diagram", 120);
+    start();
+
     return 0;
 }
 //window 1680x1000
