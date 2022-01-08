@@ -642,10 +642,6 @@ void BranchingBlock(int x,int y,int X,int &Y,int conditionsIF,int C1,int C2,int 
 }
 
 void DrawNS(node *t) {
-    Y = 250+startpy-100;
-    X = 500+startpx-100;
-    L = 0;
-
     printf("X %d    Y %d\n", X, Y);
 
     legenda(L);
@@ -690,14 +686,20 @@ void DrawNS(node *t) {
     }
 }
 
+void ResetCoord() {
+    Y = 250+startpy-100;
+    X = 500+startpx-100;
+    L = 0;
+}
+
 int main()
 {
     int C1=CT1,C2=CT2,S=SPL;
+    system("notepad.exe input.txt");
     initwindow(windowx,windowy);
     FILE *input = fopen("input.txt", "r");
     floodfill(0,0,WHITE);
     //menu();
-
 
     if (!input) {
         printf("Error - input file empty");
@@ -910,8 +912,8 @@ int main()
     //else return to X=DIMX,Y=DIMY,S=SPL,C1=CT1,C2=CT2
     printf("\n///////////// DRAWING DEBUG ////////////\n\n");
     settextstyle(0, 0, 2);
-    DrawNS(treeTop);
 
+    DrawNS(treeTop);
     bool isExit = false;
     while (!isExit) {
         bool clicked = false;
@@ -981,6 +983,7 @@ int main()
             startpy -= dif;
             printf("pressed UP  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
+            ResetCoord();
             DrawNS(treeTop);
             continue;
         }
@@ -989,6 +992,7 @@ int main()
             startpy = DEFAULT_Y;
             printf("pressed RESET  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
+            ResetCoord();
             DrawNS(treeTop);
             continue;
         }
@@ -996,6 +1000,7 @@ int main()
             startpy += dif;
             printf("pressed DOWN  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
+            ResetCoord();
             DrawNS(treeTop);
             continue;
         }
@@ -1003,6 +1008,7 @@ int main()
             startpx -= dif;
             printf("pressed LEFT  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
+            ResetCoord();
             DrawNS(treeTop);
             continue;
         }
@@ -1010,6 +1016,7 @@ int main()
             startpx += dif;
             printf("pressed RIGHT  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
+            ResetCoord();
             DrawNS(treeTop);
             continue;
         }
