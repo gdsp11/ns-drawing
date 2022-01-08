@@ -3,7 +3,7 @@ int x
 x = x + 1
 printf ("hello world")
 
-while (x = 1)
+for i = 1 to 100 do
 {
     printf ("x is 1")
     x = x + 1

@@ -1,14 +1,18 @@
 #include <iostream>
-//#include <graphics.h>
-//#include <winbgim.h>
 #include <C:\\msys64\\mingw32\\include\\graphics.h>
 #include <C:\\msys64\\mingw32\\include\\winbgim.h>
+//#include <graphics.h>
+//#include <winbgim.h>
 #include <math.h>
 using namespace std;
 
-int DIMX=150,DIMY=50,SPL=30,CT1=DIMX/2,CT2=DIMY/2;
+int DIMX = 500;
+int DIMY=50,SPL=30,CT1=DIMX/2,CT2=DIMY/2;
 //declare dimensiuni initiale
 int X=DIMX,Y=DIMY;
+
+#define DEFAULT_X 100
+#define DEFAULT_Y 100
 int startpx=100,startpy=100,L=0;
 
 // DIMX= Latimea initiala a blocurilor
@@ -17,9 +21,6 @@ int startpx=100,startpy=100,L=0;
 // CT1=  Impartire triunghi coord x
 // CT2=  Impartire triunghi coord y
 
-struct area{
-            int x,y,xx,yy;}S[50]; //creem o arie pt a determina unde am dat click cu mouse-ul
-int nrb=1;
 
 //use this struct to define the data
 struct data {
@@ -29,139 +30,25 @@ struct data {
     bool isNeg = false; //check if nr is negative
 } variable[255];        //an array for the variables. max 255
 
-void createarea(int x,int y,int xx,int yy)
-{
-    S[nrb].x=x;
-    S[nrb].y=y;
-    S[nrb].xx=xx;
-    S[nrb].yy=yy;
-    nrb++;
-}
-
-void ProcessBlock(int x,int y,int X,int Y, int &L)
-{
-    setlinestyle(0,2,3);
-    line(x,y,x+X,y);
-    line(x,y,x,y+Y);
-    line(x+X,y,x+X,y+Y);
-    line(x,y+Y,x+DIMX,y+Y);
-    L += 50;
-
-    createarea(x,y,X,Y);
-    //floodfill(x,y,WHITE);
-}
-
-void Normal_Loop(int x,int y,int conditions,int &L,int X,int Y,int S)
-{
-    int c1_x,c1_y,c2_x,c2_y;
-    setlinestyle(0,2,3);
-    c1_x=x+S;     c1_y=y+Y;
-    c2_x=x+X;     c2_y=y+Y;
-    int copyL = L + 50*(1 + conditions);
-    L = y + 50*(1 + conditions);
-    //desenam
-    line(x,y,x+X,y);
-    line(x+X,y,x+X,y+Y);
-    line(x+S,y+Y,x+X,y+Y);
-    line(x,y,x,L);
-    line(x+S,y+Y,x+S,L);
-    line(x,L,x+S,L);
-    //desenam conditiile
-    for(int i=1;i<=conditions;i++)
-    {
-        line(c2_x,c2_y,c2_x,c2_y+Y);
-        line(c2_x,c2_y+Y,c1_x,c1_y+Y);
-
-        //CONDITIONS NAME
-        c1_y+=Y;   c2_y+=Y;
-    }
-    //floodfill(x,y,WHITE);
-    createarea(x,y,x+X,y+Y);
-
-    L = copyL;
-}
-void Reverse_Loop(int x,int y,int conditions,int &L,int X,int Y,int S)
-{
-    int c1_x,c1_y,c2_x,c2_y;
-    c1_x=x+S;     c1_y=y;
-    c2_x=x+X;     c2_y=y;
-    int copyL = L + 50*(1 + conditions);
-    L=y+(50*(1+conditions));
-    setlinestyle(0,2,3);
-    //desneam conditiile
-    for(int i=1;i<=conditions;i++)
-    {
-        line(c1_x,c1_y,c2_x,c2_y);
-        line(c2_x,c2_y,c2_x,c2_y+Y);
-        //CONDITIONS NAME
-        c1_y+=Y;   c2_y+=Y;
-
-    }
-    //desenam
-    line(c1_x,c1_y,c2_x,c2_y);
-    line(x,y,x,L);
-    line(x,L,x+X,L);
-    line(x+X,L,x+X,L);
-    line(x+X,L,x+X,L-Y);
-    line(x,y,x+S,y);
-    line(x+S,L-Y,x+S,y);
-    //floodfill(x,y,WHITE);
-    createarea(x,y,x+X,y+Y);
-    L = copyL;
-}
-
-void True_Triangle(int x,int y,int Ax,int Ay,int X,int Y,int C1,int C2)
-{
-    int Mx,My;
-    setlinestyle(0,2,3);
-    line(x,y,x,y+Y);
-    line(x,y+Y,x+C1,y+Y);
-    line(x,y,x+C1,y+Y);
-    Mx= Ax+C2;  My=Ay+C2;
-
-}
-void False_Triangle(int x,int y,int Bx,int By,int X,int Y,int C1,int C2)
-{
-    int Mx,My;
-    setlinestyle(0,2,3);
-    line(x+X,y,x+X,y+Y);
-    line(x+X,y+Y,x+C1,y+Y);
-    line(x+C1,y+Y,x+X,y);
-    Mx= Bx-(C2*2);  My=By+C2;
-
-
-}
-
-void BranchingBlock(int x,int y,int X,int Y,int C1,int C2)
-{
-    int Ax,Ay,Bx,By;
-    Ax=x;        Ay=y;
-    Bx=x+X;   By=y;
-    setlinestyle(0,2,3);
-    line(x,y,x+X,y);
-    True_Triangle(x,y,Ax,Ay,X,Y,C1,C2);
-    False_Triangle(x,y,Bx,By,X,Y,C1,C2);
-    createarea(x,y,x+X,y+Y);
-}
 
 // blocks for Legend
 void ProcessBlockL(int x,int y)
 {
     setlinestyle(0,2,3);
-    rectangle(x-CT1,y-CT2,x+CT1,y+CT2);
+    rectangle(x-75,y-25,x+75,y+25);
     //floodfill(x,y,WHITE);
 }
 
 void Normal_LoopL(int x,int y,int conditions,int &L)
 {
-    int c1_x,c1_y,c2_x,c2_y;
+    int c1_x,c1_y,c2_x,c2_y,X=150;
     setlinestyle(0,2,3);
     c1_x=x+SPL;       c1_y=y+DIMY;
-    c2_x=x+DIMX;     c2_y=y+DIMY;
+    c2_x=x+X;     c2_y=y+DIMY;
     L=y+(50*(1+conditions));
-    line(x,y,x+DIMX,y);
-    line(x+DIMX,y,x+DIMX,y+DIMY);
-    line(x+SPL,y+DIMY,x+DIMX,y+DIMY);
+    line(x,y,x+X,y);
+    line(x+X,y,x+X,y+DIMY);
+    line(x+SPL,y+DIMY,x+X,y+DIMY);
     line(x,y,x,L);
     line(x+SPL,y+DIMY,x+SPL,L);
     line(x,L,x+SPL,L);
@@ -178,9 +65,9 @@ void Normal_LoopL(int x,int y,int conditions,int &L)
 }
 void Reverse_LoopL(int x,int y,int conditions,int &L)
 {
-    int c1_x,c1_y,c2_x,c2_y;
+    int c1_x,c1_y,c2_x,c2_y,X=150;
     c1_x=x+SPL;       c1_y=y;
-    c2_x=x+DIMX;     c2_y=y;
+    c2_x=x+X;     c2_y=y;
     L=y+(50*(1+conditions));
     setlinestyle(0,2,3);
     for(int i=1;i<=conditions;i++)
@@ -193,9 +80,9 @@ void Reverse_LoopL(int x,int y,int conditions,int &L)
     }
     line(c1_x,c1_y,c2_x,c2_y);
     line(x,y,x,L);
-    line(x,L,x+DIMX,L);
-    line(x+DIMX,L,x+DIMX,L);
-    line(x+DIMX,L,x+DIMX,L-DIMY);
+    line(x,L,x+X,L);
+    line(x+X,L,x+X,L);
+    line(x+X,L,x+X,L-DIMY);
     line(x,y,x+SPL,y);
     line(x+SPL,L-DIMY,x+SPL,y);
     //floodfill(x,y,WHITE);
@@ -203,11 +90,11 @@ void Reverse_LoopL(int x,int y,int conditions,int &L)
 void True_TriangleL(int x,int y,int Ax,int Ay)
 {
     char text[]={"DA"};
-    int lat,lun,Mx,My;
+    int Mx,My,X=150,T1=X/2;
     setlinestyle(0,2,3);
     line(x,y,x,y+DIMY);
-    line(x,y+DIMY,x+CT1,y+DIMY);
-    line(x,y,x+CT1,y+DIMY);
+    line(x,y+DIMY,x+T1,y+DIMY);
+    line(x,y,x+T1,y+DIMY);
     Mx= Ax+CT2;  My=Ay+CT2;
     settextstyle(4,0,1);
     outtextxy(Mx,My,text);
@@ -217,13 +104,11 @@ void True_TriangleL(int x,int y,int Ax,int Ay)
 void False_TriangleL(int x,int y,int Bx,int By)
 {
     char text[]={"NU"};
-    int lat,lun,Mx,My;
-    lat=textwidth(text);
-    lun=textheight(text);
+    int Mx,My,X=150,T1=X/2;
     setlinestyle(0,2,3);
-    line(x+DIMX,y,x+DIMX,y+DIMY);
-    line(x+DIMX,y+DIMY,x+CT1,y+DIMY);
-    line(x+CT1,y+DIMY,x+DIMX,y);
+    line(x+X,y,x+X,y+DIMY);
+    line(x+X,y+DIMY,x+T1,y+DIMY);
+    line(x+T1,y+DIMY,x+X,y);
     Mx= Bx-(CT2*2);  My=By+CT2;
     settextstyle(4,0,1);
     outtextxy(Mx,My,text);
@@ -233,67 +118,71 @@ void False_TriangleL(int x,int y,int Bx,int By)
 
 void BranchingBlockL(int x,int y)
 {
-    //int Lg=textwidth(text);
-    //int Lt=textheight(text);
-    int Ax,Ay,Bx,By;
+    int Ax,Ay,Bx,By,X=150;
     Ax=x;        Ay=y;
-    Bx=x+DIMX;   By=y;
+    Bx=x+X;   By=y;
     setlinestyle(0,2,3);
-    line(x,y,x+DIMX,y);
+    line(x,y,x+X,y);
     True_TriangleL(x,y,Ax,Ay);
     False_TriangleL(x,y,Bx,By);
     //floodfill(x,y,WHITE);
     //outtextxy();
 }
 
-
 //main menu
-int windowx=1300,windowy=850;
+int windowx=1680,windowy=1000;
 void menu()
 {
     settextstyle(4,0,4);
     setbkcolor(WHITE);
     setcolor(BLACK);
 
-    outtextxy(windowx/4,25,"Nassi-Schneiderman Diagram");
+    outtextxy(windowx/7,25,"Nassi-Schneiderman Diagram by Tudor Tescu & Fabian Pintea");
 
     setlinestyle(1,1,2);
     line(0,60,windowx,60);
 
     line(windowx-550,65,windowx-550,windowy);
-    line(windowx-550,windowy-280,windowx,windowy-280);
+    line(windowx-550,windowy-325,windowx,windowy-325);
+    outtextxy(windowx-350,windowy-300,"INFO");
     //area where the node info should be shown is [windowx-550,windowy-280,windowx,windowy-280]
+    readimagefile("INFO.jpg",windowx-525,windowy-250,windowx-20,windowy-20);
+    //readimagefile("INFO.jpg",windowx-550,windowy-250,windowx,windowy);
 }
+
+
 
 void legenda(int L)
 {
-    int bordx=windowx-250,bordy=150;
+    int bordx=windowx-250,bordy=70;
 
     settextstyle(4,0,4);
-    outtextxy(bordx-20,bordy-50,"Legenda");
+    outtextxy(bordx-20,bordy,"Legenda");
+    bordy+=40;
 
     settextstyle(4,0,3);
-    outtextxy(bordx-240,bordy+20,"Process Block");
+    outtextxy(bordx-250,bordy+20,"Process Block");
     ProcessBlockL(bordx+75,bordy+25);
     bordy+=DIMY;
+    bordy+=20;
 
     outtextxy(bordx-100,bordy+50,"Loop");
     Normal_LoopL(bordx,bordy,2,L);
     bordy*=2;
+    bordy+=40;
 
-    outtextxy(bordx-240,bordy,"Reverse Loop");
+    outtextxy(bordx-180,bordy,"Reverse L");
     Reverse_LoopL(bordx,bordy-50,2,L);
     bordy+=(DIMY*2);
+    bordy+=20;
 
-    outtextxy(bordx-210,bordy+20,"If Statement");
+    outtextxy(bordx-190,bordy+20,"If Statment");
     BranchingBlockL(bordx,bordy);
 
     settextstyle(4,0,4);
     bordy+=100;
-    outtextxy(bordx-100,bordy,"Made by");
-    outtextxy(bordx-150,bordy+50,"Tudor Tescu");
-    outtextxy(bordx-45,bordy+100,"&");
-    outtextxy(bordx-150,bordy+150,"Fabian Pintea");
+
+
 }
 //creates a new variable in the struct above
 void CreateInteger(int value, char name[]) {
@@ -540,50 +429,6 @@ void MakeTree(node *&crt, char data[][128], int &last) {
     }
 }
 
-//searching and displaying on another text the code
-/*
-int searchA(int x,int y)
-{
-    int i,ok=0;
-    for(i=1;i<=50;i++)
-    {
-        //S[nrb].x,y,xx,yy;
-        if((S[i].x<x&&S[i].y<y)&&(S[i].xx>x&&S[i].yy>y))
-           {
-             ok=1;
-             break;
-           }
-    }
-    if(ok==1)
-    {
-        initwindow(300,300);
-        floodfill(0,0,WHITE);
-        outtext("TEST");
-    }
-}
-
-// showarea
-void showarea()
-{
-    int i;
-    for(i=1;i<=50;i++)
-    {
-        cout<<"x="<<S[i].x<<" ";
-        cout<<"y="<<S[i].y<<endl;
-        cout<<"xx="<<S[i].xx<<" ";
-        cout<<"yy="<<S[i].yy<<endl;
-        cout<<endl;
-    }
-}
-
-void click(int x,int y)
-{
-     searchA(x,y);
-
-}
-
-*/
-
 int crtLine = 0;
 
 int CountConditions (node *t) {
@@ -600,40 +445,258 @@ int CountConditions (node *t) {
     return conditions;
 }
 
+void ProcessBlock(int x,int y,int X,int &Y, int &L,node *t) {
+    setlinestyle(0,2,3);
+    line(x,y,x+X,y);
+    line(x,y,x,y+50);
+    line(x+X,y,x+X,y+50);
+    line(x,y+50,x+X,y+50);
+    L += 50;
+    outtextxy(x+5,y+20,t->line);
+    //y = Y;
+    Y += 50;
+
+    //floodfill(x,y,WHITE);
+}
+
+void ProcessBlock_EMPTY(int x,int y,int X,int Y) {
+    setlinestyle(0,2,3);
+    line(x,y,x+X,y);
+    line(x,y,x,y+Y);
+    line(x+X,y,x+X,y+Y);
+    line(x,y+Y,x+X,y+Y);
+    //floodfill(x,y,WHITE);
+}
+
+void Normal_Loop(int x,int y,int conditions,int &L,int X,int Y,int S,node *t) {
+    int c1_x,c1_y,c2_x,c2_y;
+    setlinestyle(0,2,3);
+    c1_x=x+S;     c1_y=y+Y;
+    c2_x=x+X;     c2_y=y+Y;
+    int copyL = L + 50*(1 + conditions);
+    L = y + 50*(1 + conditions);
+    //desenam
+    line(x,y,x+X,y);
+    line(x+X,y,x+X,y+Y);
+    line(x+S,y+Y,x+X,y+Y);
+    line(x,y,x,L);
+    line(x+S,y+Y,x+S,L);
+    line(x,L,x+S,L);
+    outtextxy(x+10,y+15,t->line);
+    //desenam conditiile
+    t=t->left->below;
+    for(int i=1;i<=conditions;i++)
+    {
+
+        line(c2_x,c2_y,c2_x,c2_y+Y);
+        line(c2_x,c2_y+Y,c1_x,c1_y+Y);
+
+        //CONDITIONS NAME
+        outtextxy(c1_x+10,c1_y+20,t->line);
+        t=t->below;
+        c1_y+=Y;   c2_y+=Y;
+    }
+    //floodfill(x,y,WHITE);
+    //createarea(x,y,x+X,y+Y);
+
+    L = copyL;
+}
+
+void Reverse_Loop(int x,int y,int conditions,int &L,int X,int Y,int S,node *t) {
+    int c1_x,c1_y,c2_x,c2_y;
+    c1_x=x+S;     c1_y=y;
+    c2_x=x+X;     c2_y=y;
+    int copyL = L + 50*(1 + conditions);
+    L=y+(50*(1+conditions));
+    setlinestyle(0,2,3);
+    outtextxy(x,y+10,t->line);
+    node *p;
+    p=new node;
+    p=t->left->below;
+    //desneam conditiile
+    for(int i=1;i<=conditions;i++)
+    {
+        line(c1_x,c1_y,c2_x,c2_y);
+        line(c2_x,c2_y,c2_x,c2_y+Y);
+        //CONDITIONS NAME
+        outtextxy(c1_x+10,c1_y+20,p->line);
+        p=p->below;
+        c1_y+=Y;   c2_y+=Y;
+
+    }
+    //desenam
+    line(c1_x,c1_y,c2_x,c2_y);
+    line(x,y,x,L);
+    line(x,L,x+X,L);
+    line(x+X,L,x+X,L);
+    line(x+X,L,x+X,L-Y);
+    line(x,y,x+S,y);
+    line(x+S,L-Y,x+S,y);
+    outtextxy(x+5,L-30,p->line);
+
+    //createarea(x,y,x+X,y+Y);
+    L = copyL;
+}
+
+void True_Triangle(int x,int y,int Ax,int Ay,int X,int Y,int C1,int C2) {
+    int Mx,My;
+    setlinestyle(0,2,3);
+    line(x,y,x,y+Y);
+    line(x,y+Y,x+C1,y+Y);
+    line(x,y,x+C1,y+Y);
+    Mx= Ax+C2;  My=Ay+C2;
+
+}
+
+void False_Triangle(int x,int y,int Bx,int By,int X,int Y,int C1,int C2) {
+    int Mx,My;
+    setlinestyle(0,2,3);
+    line(x+X,y,x+X,y+Y);
+    line(x+X,y+Y,x+C1,y+Y);
+    line(x+C1,y+Y,x+X,y);
+    Mx= Bx-(C2*2);  My=By+C2;
+}
+
+void IFF(int x,int y,int Y,int C1,int &L,node *t) {
+    ProcessBlock(x,y+Y,C1,Y,L,t);
+}
+
+void ELSEF(int x,int y,int Y,int C1,int &L,node *t) {
+    ProcessBlock(C1+x,y+Y,C1,Y,L,t);
+}
+
+void ELSEFE(int x,int y,int Y,int C1) {
+    ProcessBlock_EMPTY(C1+x,y+Y,C1,Y);
+}
+
+void IFFE(int x,int y,int Y,int C1) {
+    ProcessBlock_EMPTY(x,y+Y,C1,Y);
+}
+
+void casesIF(int x,int y,int X,int Y,int conditionsIF,int conditionsELSE,int C1,int C2,int L,node *t,node *p) {
+    if(conditionsIF>=conditionsELSE) {
+        for(conditionsIF;conditionsIF>=1;conditionsIF--) {
+            //settextstyle(4,0,1);
+            IFF(x,y,Y,C1,L,t);
+
+            if(conditionsELSE>=1) {
+                ELSEF(x,y,Y,C1,L,p);
+            }
+            else {
+                ELSEFE(x,y,Y,C1);
+            }
+            conditionsELSE--;
+            if(t->below)t=t->below;
+            if(p->below)p=p->below;
+            y=Y;
+            Y=Y+50;
+            //L=L+50;
+        }
+    }
+    else if (conditionsELSE > conditionsIF) {
+        for(conditionsELSE; conditionsELSE >= 1; conditionsELSE--) {
+            //settextstyle(4,0,1);
+
+            ELSEF(x,y,Y,C1,L,p);
+
+            if(conditionsIF>=1) {
+                IFF(x,y,Y,C1,L,t);
+            }
+           else {
+                IFFE(x,y,Y,C1);
+            }
+            conditionsIF--;
+            if(t->below)
+                t=t->below;
+            if(p->below)
+                p=p->below;
+            y = Y;
+            Y = Y + 50;
+            //L=L+50;
+        }
+    }
+}
+
+void BranchingBlock(int x,int y,int X,int &Y,int conditionsIF,int C1,int C2,int &L,node *t) {
+    int Ax,Ay,Bx,By,copyL,conditionsELSE=0;
+    Ax=x;     Ay=y;
+    Bx=x+X;   By=y;
+    setlinestyle(0,2,3);
+    line(x,y,x+X,y);
+    True_Triangle(x,y,Ax,Ay,X,Y,C1,C2);
+    False_Triangle(x,y,Bx,By,X,Y,C1,C2);
+    outtextxy(x+175,y+15,t->line);
+    conditionsELSE=CountConditions(t->below->left);
+    node *p;
+    p=new node;
+    p=t->below->left->below;//else
+    t=t->left->below;//if
+
+    Y += 50;
+    casesIF(x,y,X,Y,conditionsIF,conditionsELSE,C1,C2,L,t,p);
+    L=L+(50*(1+conditionsIF));
+
+    //L=y+(50*(conditions));
+    copyL=L;
+    //L = copyL;
+}
+
 void DrawNS(node *t) {
- //printf("help\n");
-    int S = SPL;
+    Y = 250+startpy-100;
+    X = 500+startpx-100;
+    L = 0;
+
+    printf("X %d    Y %d\n", X, Y);
+
+    legenda(L);
+    menu();
+    int S = SPL,C1=CT1,C2=CT2;
+    settextstyle(1,0,1);
     if (t) {
         if (GetLineType(t->line) == 0) {
-            ProcessBlock(startpx, startpy + L, X, Y, L);
+            ProcessBlock(startpx, startpy + L, X, Y, L,t);
             printf("draw basic ------ %s", t->line);
             DrawNS(t->below);
         }
+        else if (GetLineType(t->line) == 1) {
+            if(GetLineType(t->below->line)==2) {
+                printf("draw if with else ------- %s%s", t->line,t->below->line);
+                BranchingBlock(startpx, startpy + L, X, Y,CountConditions(t->left), C1, C2, L, t);
+                DrawNS(t->below->below);
+
+            }
+            else {
+                 printf("draw if ------- %s", t->line);
+                 BranchingBlock(startpx, startpy + L, X, Y,CountConditions(t->left), C1, C2, L, t);
+                 DrawNS(t->below);
+            }
+
+        }
         else if (GetLineType(t->line) == 3) {
             printf("draw for ------- %s", t->line);
-            Normal_Loop(startpx, startpy + L, CountConditions(t->left), L, X, Y, S);
+            Normal_Loop(startpx, startpy + L, CountConditions(t->left), L, X, Y, S,t);
             DrawNS(t->below);
         }
         else if (GetLineType(t->line) == 4) {
             printf("draw while ------- %s", t->line);
-            Normal_Loop(startpx, startpy + L, CountConditions(t->left), L, X, Y, S);
+            Normal_Loop(startpx, startpy + L, CountConditions(t->left), L, X, Y, S,t);
             DrawNS(t->below);
         }
         else if (GetLineType(t->line) == 5) {
             printf("draw do/while ------- %s", t->line);
-            Reverse_Loop(startpx, startpy + L, CountConditions(t->left), L, X, Y, S);
+            Reverse_Loop(startpx, startpy + L, CountConditions(t->left), L, X, Y, S,t);
             DrawNS(t->below);
         }
     }
 }
 
 int main()
-{   int C1=CT1,C2=CT2,S=SPL;
+{
+    int C1=CT1,C2=CT2,S=SPL;
     initwindow(windowx,windowy);
     FILE *input = fopen("input.txt", "r");
     floodfill(0,0,WHITE);
-    menu();
-    legenda(L);
+    //menu();
 
 
     if (!input) {
@@ -642,11 +705,11 @@ int main()
     }
 
     //saving the code in a 2d array, as tokens
-    char line[1023];
+    char linie[1023];
     char code[1024][128] = {0};
-    while (fgets(line, sizeof(line), input)) {
-        if (strcmp(line, "\0") && strcmp(line, "\n")) {
-            strcpy(code[k], line);
+    while (fgets(linie, sizeof(linie), input)) {
+        if (strcmp(linie, "\0") && strcmp(linie, "\n")) {
+            strcpy(code[k], linie);
             k++;
         }
     }
@@ -660,65 +723,65 @@ int main()
         //count the lines for debug
         CountLines(totalLine, codeLine, commentLine, code[k]);
 
-        strcpy(line, code[i]);
+        strcpy(linie, code[i]);
 
-        if (strlen(line) == 1) {
+        if (strlen(linie) == 1) {
             printf("Empty line %d\n", totalLine);
             //IGNORE LINE
         }
-        else if (FirstChars(line, "//")) {
+        else if (FirstChars(linie, "//")) {
             printf("Commented line %d\n", totalLine);
             //IGNORE LINE
         }//check if an int variable is defined
-        else if (FirstChars(line, "int ")) {
+        else if (FirstChars(linie, "int ")) {
             printf("Declared int on line %d\n", totalLine);
 
             //extract the variable name
             char name[16] = {0};
             int i = 4, k = 0;
-            while(i < strlen(line)-1) {
-                name[k++] = line[i++];
+            while(i < strlen(linie)-1) {
+                name[k++] = linie[i++];
             }
 
             CreateInteger(1, name);
             //MakeNode(tree, line, "basic");
         }//check if the line is an IF check
-        else if (FirstChars(line, "if ")) {
+        else if (FirstChars(linie, "if ")) {
             printf("If check on line %d\n", totalLine);
             //MakeNode(tree, line, "if");
         }
-        else if (FirstChars(line, "else")) {
+        else if (FirstChars(linie, "else")) {
             printf("Else check on line %d\n", totalLine);
             //MakeNode(tree, line, "else");
         }
-        else if (FirstChars(line, "{")) {
+        else if (FirstChars(linie, "{")) {
             printf("Opened accolade on line %d\n", totalLine);
             //MakeNode(tree, line, "openAcc");
         }
-        else if (FirstChars(line, "}")) {
+        else if (FirstChars(linie, "}")) {
             printf("Closed accolade on line %d\n", totalLine);
             //MakeNode(tree, line, "closeAcc");
         }
-        else if (FirstChars(line, "fopen ")) {
+        else if (FirstChars(linie, "fopen ")) {
             printf("Open file on line %d\n", totalLine);
             //MakeNode(tree, line, "basic");
         }
-        else if (FirstChars(line, "for ")) {
+        else if (FirstChars(linie, "for ")) {
             printf("For iteration on line %d\n", totalLine);
             //MakeNode(tree, line, "for");
         }
-        else if (FirstChars(line, "while ")) {
+        else if (FirstChars(linie, "while ")) {
             printf("While iteration on line %d\n", totalLine);
             //MakeNode(tree, line, "while");
         }
-        else if (FirstChars(line, "do")) {
+        else if (FirstChars(linie, "do")) {
             printf("do/while iteration on line %d\n", totalLine);
         }
-        else if (FirstChars(line, "printc ")) {
+        else if (FirstChars(linie, "printc ")) {
             printf("Output to console on line %d\n", totalLine);
             //MakeNode(tree, line, "basic");
         }
-        else if (FirstChars(line, "printf ")) {
+        else if (FirstChars(linie, "printf ")) {
             printf("Print to file on line %d\n", totalLine);
             //MakeNode(tree, line, "basic");
         }//check if we are modifying a variable
@@ -729,10 +792,10 @@ int main()
             //reset char array
             for (int i = 0; i < 16; i++)
                 name[i] = '\0';
-            while (line[i++] == ' ' && i < strlen(line)) {} //will end at i+1
+            while (linie[i++] == ' ' && i < strlen(linie)) {} //will end at i+1
             i--;
-            while (line[i] != ' ' && i < strlen(line)) {
-                name[k++] = line[i++];
+            while (linie[i] != ' ' && i < strlen(linie)) {
+                name[k++] = linie[i++];
             }//will end at i+1 (on the first space after the name)
 
             //now we need to check if the name is found in the struct
@@ -745,8 +808,8 @@ int main()
                 //we are now in the expression and we will save it in an array
                 k = 0;
                 char expression[1023] = {0};
-                while(i < strlen(line)-1) {
-                    expression[k++] = line[i++];
+                while(i < strlen(linie)-1) {
+                    expression[k++] = linie[i++];
                 }
                 //HERE WE HAVE A MATH EQUATION
                 printf("Found expression %.*s = %.*s on line %d.\n",
@@ -763,7 +826,7 @@ int main()
 
         }//if the line does not match any of the defined operations and is NOT empty and NOT a comment, error 1000
         else {
-            if (!FirstChars(line, "//") && !FirstChars(line, "\n")) {
+            if (!FirstChars(linie, "//") && !FirstChars(linie, "\n")) {
                 printf("Error on line %d. Undefined instruction.\n", totalLine);
                 exit(1000);
             }
@@ -849,7 +912,118 @@ int main()
     settextstyle(0, 0, 2);
     DrawNS(treeTop);
 
+    bool isExit = false;
+    while (!isExit) {
+        bool clicked = false;
+
+        setfillstyle(SOLID_FILL, BLACK);
+        setlinestyle(0, 0, 3);
+        //up
+        //rectangle(970, 760, 970+70, 760+70);
+        rectangle(970+23, 760+70, 970+47, 760+30);
+        line(970+23-15, 760+30, 970+47+15, 760+30);
+        line(970+23-15, 760+30, 970+23+15, 760+5);
+        line(970+47+15, 760+30, 970+23+15, 760+5);
+        floodfill(1002, 778, BLACK);
+        floodfill(1002, 807, BLACK);
+
+        //down
+        //rectangle(970, 920, 970+70, 920+70);
+        rectangle(970+23, 920, 970+47, 920+40);
+        line(970+23-15, 960, 970+47+15, 960);
+        line(970+23-15, 960, 970+23+15, 985);
+        line(970+23+15, 985, 970+47+15, 960);
+        floodfill(1002, 932, BLACK);
+        floodfill(1002, 974, BLACK);
+
+        //left
+        //rectangle(890, 840, 890+70, 840+70);
+        rectangle(955, 840+23, 915, 840+47);
+        line(890+25, 840+15, 890+25, 840+55);
+        line(890+25, 840+15, 890, 840+35);
+        line(890+25, 840+70-15, 890, 840+35);
+        floodfill(927, 872, BLACK);
+        floodfill(904, 873, BLACK);
+
+        //right
+        //rectangle(1050, 840, 1050+70, 840+70);
+        rectangle(1055, 840+23, 1090, 840+47);
+        floodfill(1060, 870, BLACK);
+        line(1090, 840+15, 1090, 840+70-15);
+        line(1090, 840+15, 1115, 840+35);
+        line(1090, 840+70-15, 1115, 840+35);
+        floodfill(1095, 840+23, BLACK);
+
+        //reset
+        //rectangle(970, 840, 970+70, 840+70);
+        circle(970+35, 840+35, 20);
+        floodfill(970+35, 840+35, BLACK);
+
+        //exit
+        //rectangle(1070, 70, 1070+50, 120);
+        setlinestyle(SOLID_LINE, 0, 5);
+        line(1070, 70, 1070+50, 120);
+        line(1070+50, 70, 1070, 120);
+
+        int mouseX = 0;
+        int mouseY = 0;
+        getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
+
+        //up -      (970, 760),     (1040, 830)
+        //reset -   (970, 840),     (1040, 910)
+        //down -    (970, 920),     (1040, 990)
+        //left -    (890, 840),     (960, 910)
+        //right -   (1050, 840),    (1120, 910)
+        //exit -    (1070, 70),     (1120, 120)
+
+        int dif = 50;
+        if (mouseX >= 970 && mouseX <= 1040 && mouseY >= 760 && mouseY <= 830) { //up
+            startpy -= dif;
+            printf("pressed UP  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
+            cleardevice();
+            DrawNS(treeTop);
+            continue;
+        }
+        else if (mouseX >= 970 && mouseX <= 1040 && mouseY >= 840 && mouseY <= 910) { //reset
+            startpx = DEFAULT_X;
+            startpy = DEFAULT_Y;
+            printf("pressed RESET  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
+            cleardevice();
+            DrawNS(treeTop);
+            continue;
+        }
+        else if (mouseX >= 970 && mouseX <= 1040 && mouseY >= 920 && mouseY <= 990) { //down
+            startpy += dif;
+            printf("pressed DOWN  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
+            cleardevice();
+            DrawNS(treeTop);
+            continue;
+        }
+        else if (mouseX >= 890 && mouseY >= 840 && mouseX <= 960 && mouseY <= 910) { //left
+            startpx -= dif;
+            printf("pressed LEFT  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
+            cleardevice();
+            DrawNS(treeTop);
+            continue;
+        }
+        else if (mouseX >= 1050 && mouseY >= 840 && mouseX <= 1120 && mouseY <= 910) { //right
+            startpx += dif;
+            printf("pressed RIGHT  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
+            cleardevice();
+            DrawNS(treeTop);
+            continue;
+        }
+        else if (mouseX >= 1070 && mouseY >= 70 && mouseX <= 1120 && mouseY <= 120) { //exit
+            exit(0);
+        }
+
+        if (mouseX != -1) {
+            printf("%d   %d\n", mouseX, mouseY);
+        }
+    }
+
     getch();
     closegraph();
     return 0;
 }
+//window 1680x1000
