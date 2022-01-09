@@ -1,17 +1,22 @@
+int z
 int y
 int x
 x = x + 1
 printf ("hello world")
 
-for i = 1 to 100 do
-{
-    printf ("x is 1")
-    x = x + 1
-}
 do
 {
-    printf ("lmao")
-    x = x + 1
-} while (x = 1)
+    printf ("hi")
+    printf ("hi")
+    printf ("hi")
+} while (x == y)
+while (x == y)
+{
+    printf ("hi")
+}
+if (x == y)
+{
+    printf ("yay")
+}
 
 printf ("goodbye!")
