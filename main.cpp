@@ -152,10 +152,30 @@ void menu(bool isInitial = false)
 
     line(windowx-550,0,windowx-550,windowy);
     line(windowx-550,windowy-325,windowx,windowy-325);
-    outtextxy(windowx-350,windowy-300,"INFO");
+    outtextxy(windowx-400,windowy-300,"Thank you!");
     //area where the node info should be shown is [windowx-550,windowy-280,windowx,windowy-280]
-    readimagefile("images/INFO.jpg",windowx-525,windowy-250,windowx-20,windowy-20);
-    //readimagefile("INFO.jpg",windowx-550,windowy-250,windowx,windowy);
+    //readimagefile("images/INFO.jpg",windowx-525,windowy-250,windowx-20,windowy-20);
+    // Set color of smiley to yellow
+    //setcolor(YELLOW);
+
+    // creating circle and fill it with
+    // yellow color using floodfill.
+    circle(windowx-275, windowy-145, 120);
+    //setfillstyle(SOLID_FILL, YELLOW);
+    //floodfill(windowx-450+20, windowy-180, YELLOW);
+
+    // Set color of background to black
+    setcolor(BLACK);
+    setfillstyle(SOLID_FILL, BLACK);
+
+    // Use fill ellipse for creating eyes
+    fillellipse(windowx-310, windowy-195, 15, 30);
+    fillellipse(windowx-240, windowy-195, 15, 30);
+
+    // Use ellipse for creating mouth
+    ellipse(windowx-275, windowy-120, 205, 335, 39, 32);
+    ellipse(windowx-275, windowy-120, 205, 335, 39, 33);
+    ellipse(windowx-275, windowy-120, 205, 335, 39, 34);
 }
 
 void legenda(int L)
@@ -795,6 +815,36 @@ void InitAlg() {
             printf("Commented line %d\n", totalLine);
             //IGNORE LINE
         }//check if an int variable is defined
+        else if (FirstChars(linie, "float ")) {
+            printf("Commented line %d\n", totalLine);//extract the variable name
+            char name[16] = {0};
+            int i = 6, k = 0;
+            while(i < strlen(linie)-1) {
+                name[k++] = linie[i++];
+            }
+
+            CreateInteger(1, name);
+        }
+        else if (FirstChars(linie, "unsigned int ")) {//extract the variable name
+            char name[16] = {0};
+            int i = 13, k = 0;
+            while(i < strlen(linie)-1) {
+                name[k++] = linie[i++];
+            }
+
+            CreateInteger(1, name);
+            printf("Commented line %d\n", totalLine);
+        }
+        else if (FirstChars(linie, "double ")) {//extract the variable name
+            char name[16] = {0};
+            int i = 7, k = 0;
+            while(i < strlen(linie)-1) {
+                name[k++] = linie[i++];
+            }
+
+            CreateInteger(1, name);
+            printf("Commented line %d\n", totalLine);
+        }
         else if (FirstChars(linie, "int ")) {
             printf("Declared int on line %d\n", totalLine);
 

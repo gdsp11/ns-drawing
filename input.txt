@@ -1,6 +1,7 @@
 int z
-int y
-int x
+float y
+unsigned int x
+
 x = x + 1
 printf ("hello world")
 
