@@ -19,5 +19,11 @@ if (x == y)
 {
     printf ("yay")
 }
+else
+{
+    printf ("not yay")
+}
+
+printf ("goodbye!")
 
 printf ("goodbye!")

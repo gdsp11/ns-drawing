@@ -6,25 +6,28 @@
 #include <math.h>
 using namespace std;
 
+//Tudor Tescu
 void start();
+//Tudor Tescu
 void info();
 
-int DIMX = 500;
-int DIMY=50,SPL=30,CT1=DIMX/2,CT2=DIMY/2;
+//Fabian Pintea
+
 //declare dimensiuni initiale
-int X=DIMX,Y=DIMY;
-
-#define DEFAULT_X 100
-#define DEFAULT_Y 100
-int startpx=100,startpy=100,L=0;
-
 // DIMX= Latimea initiala a blocurilor
 // DIMY= Lungimea initiala a blocurilor
 // SPL=  Padding-ul dintre loop si blocuri
 // CT1=  Impartire triunghi coord x
 // CT2=  Impartire triunghi coord y
+int DIMX = 500;
+int DIMY = 50, SPL = 30, CT1 = DIMX/2, CT2 = DIMY/2;
+int X = DIMX, Y = DIMY;
 
+#define DEFAULT_X 100
+#define DEFAULT_Y 100
+int startpx = 100, startpy = 100, L = 0;
 
+//Tudor Tescu
 //use this struct to define the data
 struct data {
     int value;          //value of the variable
@@ -33,136 +36,134 @@ struct data {
     bool isNeg = false; //check if nr is negative
 } variable[255];        //an array for the variables. max 255
 
+//Tudor Tescu
+int totalLine = 0, codeLine = 0, commentLine = 0;
+struct node {
+    char line[1023];
 
-// blocks for Legend
-void ProcessBlockL(int x,int y)
-{
-    setlinestyle(0,2,3);
-    rectangle(x-75,y-25,x+75,y+25);
-    //floodfill(x,y,WHITE);
+    node *left = NULL;
+    node *below = NULL;
+}*treeTop;
+
+//Tudor Tescu
+void reset(node *&t);
+
+//Fabian Pintea
+//blocks for Legend
+void ProcessBlockL(int x, int y) {
+    setlinestyle(0, 2, 3);
+    rectangle(x-75, y-25, x+75, y+25);
 }
 
-void Normal_LoopL(int x,int y,int conditions,int &L)
-{
-    int c1_x,c1_y,c2_x,c2_y,X=150;
-    setlinestyle(0,2,3);
-    c1_x=x+SPL;       c1_y=y+DIMY;
-    c2_x=x+X;     c2_y=y+DIMY;
-    L=y+(50*(1+conditions));
-    line(x,y,x+X,y);
-    line(x+X,y,x+X,y+DIMY);
-    line(x+SPL,y+DIMY,x+X,y+DIMY);
-    line(x,y,x,L);
-    line(x+SPL,y+DIMY,x+SPL,L);
-    line(x,L,x+SPL,L);
+//Fabian Pintea
+void Normal_LoopL(int x, int y, int conditions, int &L) {
+    int c1_x, c1_y, c2_x, c2_y, X = 150;
+    setlinestyle(0, 2, 3);
+    c1_x = x+SPL;         c1_y = y+DIMY;
+    c2_x = x+X;           c2_y = y+DIMY;
+    L = y + (50*(1 + conditions));
+    line(x, y, x+X, y);
+    line(x+X, y, x+X, y+DIMY);
+    line(x+SPL, y+DIMY, x+X, y+DIMY);
+    line(x, y, x, L);
+    line(x+SPL, y+DIMY, x+SPL, L);
+    line(x, L, x+SPL, L);
 
-    for(int i=1;i<=conditions;i++)
-    {
-        line(c2_x,c2_y,c2_x,c2_y+DIMY);
-        line(c2_x,c2_y+DIMY,c1_x,c1_y+DIMY);
+    for(int i = 1; i <= conditions; i++) {
+        line(c2_x, c2_y, c2_x, c2_y+DIMY);
+        line(c2_x, c2_y+DIMY, c1_x, c1_y+DIMY);
 
         //CONDITIONS NAME
-        c1_y+=DIMY;   c2_y+=DIMY;
+        c1_y += DIMY;   c2_y += DIMY;
     }
-    //floodfill(x,y,WHITE);
 }
-void Reverse_LoopL(int x,int y,int conditions,int &L)
-{
-    int c1_x,c1_y,c2_x,c2_y,X=150;
-    c1_x=x+SPL;       c1_y=y;
-    c2_x=x+X;     c2_y=y;
-    L=y+(50*(1+conditions));
-    setlinestyle(0,2,3);
-    for(int i=1;i<=conditions;i++)
-    {
-        line(c1_x,c1_y,c2_x,c2_y);
-        line(c2_x,c2_y,c2_x,c2_y+DIMY);
+
+//Fabian Pintea
+void Reverse_LoopL(int x, int y, int conditions, int &L) {
+    int c1_x, c1_y, c2_x, c2_y, X=150;
+    c1_x = x+SPL;       c1_y = y;
+    c2_x = x+X;         c2_y=y;
+    L = y + (50*(1 + conditions));
+    setlinestyle(0, 2, 3);
+    for(int i = 1; i <= conditions; i++) {
+        line(c1_x, c1_y, c2_x, c2_y);
+        line(c2_x, c2_y, c2_x, c2_y+DIMY);
         //CONDITIONS NAME
-        c1_y+=DIMY;   c2_y+=DIMY;
+        c1_y += DIMY;   c2_y += DIMY;
 
     }
-    line(c1_x,c1_y,c2_x,c2_y);
-    line(x,y,x,L);
-    line(x,L,x+X,L);
-    line(x+X,L,x+X,L);
-    line(x+X,L,x+X,L-DIMY);
-    line(x,y,x+SPL,y);
-    line(x+SPL,L-DIMY,x+SPL,y);
-    //floodfill(x,y,WHITE);
-}
-void True_TriangleL(int x,int y,int Ax,int Ay)
-{
-    char text[]={"DA"};
-    int Mx,My,X=150,T1=X/2;
-    setlinestyle(0,2,3);
-    line(x,y,x,y+DIMY);
-    line(x,y+DIMY,x+T1,y+DIMY);
-    line(x,y,x+T1,y+DIMY);
-    Mx= Ax+CT2;  My=Ay+CT2;
-    settextstyle(4,0,1);
-    outtextxy(Mx,My,text);
-    //print "DA" in middle of the triangle
-
-}
-void False_TriangleL(int x,int y,int Bx,int By)
-{
-    char text[]={"NU"};
-    int Mx,My,X=150,T1=X/2;
-    setlinestyle(0,2,3);
-    line(x+X,y,x+X,y+DIMY);
-    line(x+X,y+DIMY,x+T1,y+DIMY);
-    line(x+T1,y+DIMY,x+X,y);
-    Mx= Bx-(CT2*2);  My=By+CT2;
-    settextstyle(4,0,1);
-    outtextxy(Mx,My,text);
-    //print "NU" in middle of the triangle
-
+    line(c1_x, c1_y, c2_x, c2_y);
+    line(x, y, x, L);
+    line(x, L, x+X, L);
+    line(x+X, L, x+X, L);
+    line(x+X, L, x+X, L-DIMY);
+    line(x, y, x+SPL, y);
+    line(x+SPL, L-DIMY, x+SPL, y);
 }
 
-void BranchingBlockL(int x,int y)
-{
-    int Ax,Ay,Bx,By,X=150;
-    Ax=x;        Ay=y;
-    Bx=x+X;   By=y;
-    setlinestyle(0,2,3);
-    line(x,y,x+X,y);
-    True_TriangleL(x,y,Ax,Ay);
-    False_TriangleL(x,y,Bx,By);
-    //floodfill(x,y,WHITE);
-    //outtextxy();
+//Fabian Pintea
+void True_TriangleL(int x, int y, int Ax, int Ay) {
+    char text[] = {"DA"};
+    int Mx, My, X = 150, T1 = X/2;
+
+    setlinestyle(0, 2, 3);
+    line(x, y, x, y+DIMY);
+    line(x, y+DIMY, x+T1, y+DIMY);
+    line(x, y, x+T1, y+DIMY);
+    Mx = Ax+CT2;  My = Ay+CT2;
+    settextstyle(4, 0, 1);
+    outtextxy(Mx, My, text);
 }
 
+//Fabian Pintea
+void False_TriangleL(int x, int y, int Bx, int By) {
+    char text[] = {"NU"};
+    int Mx, My, X = 150, T1 = X/2;
+
+    setlinestyle(0, 2, 3);
+    line(x+X, y, x+X, y+DIMY);
+    line(x+X, y+DIMY, x+T1, y+DIMY);
+    line(x+T1, y+DIMY, x+X, y);
+    Mx = Bx - (CT2*2);  My = By+CT2;
+    settextstyle(4, 0, 1);
+    outtextxy(Mx, My, text);
+}
+
+//Fabian Pintea
+void BranchingBlockL(int x, int y) {
+    int Ax, Ay, Bx, By, X = 150;
+
+    Ax = x;        Ay = y;
+    Bx = x+X;      By = y;
+
+    setlinestyle(0, 2, 3);
+    line(x, y, x+X, y);
+    True_TriangleL(x, y, Ax, Ay);
+    False_TriangleL(x, y, Bx, By);
+}
+
+//Fabian Pintea
 //main menu
-int windowx=1680,windowy=1000;
-void menu(bool isInitial = false)
-{
+int windowx = 1680, windowy = 1000;
+void menu(bool isInitial = false) {
     if (isInitial) {
-        settextstyle(4,0,4);
+        settextstyle(4, 0, 4);
         setbkcolor(WHITE);
         setcolor(BLACK);
     }
-    //setlinestyle(SOLID_LINE, 0, 1);
-    //rectangle(0, 0, windowx, 59);
     setfillstyle(SOLID_FILL, WHITE);
     settextstyle(0, 0, 3);
-    //outtextxy(windowx/7,25,"Nassi-Schneiderman Diagram by Tudor Tescu & Fabian Pintea");
 
-    setlinestyle(1,1,2);
-    //line(0,60,windowx,60);
+    setlinestyle(1, 1, 2);
 
-    line(windowx-550,0,windowx-550,windowy);
-    line(windowx-550,windowy-325,windowx,windowy-325);
-    outtextxy(windowx-400,windowy-300,"Thank you!");
+    line(windowx-550, 0, windowx-550, windowy);
+    line(windowx-550, windowy-325, windowx, windowy-325);
+    outtextxy(windowx-400, windowy-300, "Thank you!");
+
     //area where the node info should be shown is [windowx-550,windowy-280,windowx,windowy-280]
-    //readimagefile("images/INFO.jpg",windowx-525,windowy-250,windowx-20,windowy-20);
-    // Set color of smiley to yellow
-    //setcolor(YELLOW);
 
-    // creating circle and fill it with
-    // yellow color using floodfill.
+    //smiley
     circle(windowx-275, windowy-145, 120);
-    //setfillstyle(SOLID_FILL, YELLOW);
-    //floodfill(windowx-450+20, windowy-180, YELLOW);
 
     // Set color of background to black
     setcolor(BLACK);
@@ -178,38 +179,38 @@ void menu(bool isInitial = false)
     ellipse(windowx-275, windowy-120, 205, 335, 39, 34);
 }
 
-void legenda(int L)
-{
-    int bordx=windowx-250,bordy=70;
+//Fabian Pintea
+void legenda(int L) {
+    int bordx = windowx-250, bordy = 70;
+
+    settextstyle(4, 0, 4);
+    outtextxy(bordx-20, bordy, "Legenda");
+    bordy += 40;
+
+    settextstyle(4, 0, 3);
+    outtextxy(bordx-250, bordy+20, "Process Block");
+    ProcessBlockL(bordx+75, bordy+25);
+    bordy += DIMY;
+    bordy += 20;
+
+    outtextxy(bordx-100, bordy+50, "Loop");
+    Normal_LoopL(bordx, bordy, 2, L);
+    bordy *= 2;
+    bordy += 40;
+
+    outtextxy(bordx-180, bordy, "Reverse L");
+    Reverse_LoopL(bordx, bordy-50, 2, L);
+    bordy += (DIMY*2);
+    bordy += 20;
+
+    outtextxy(bordx-190, bordy+20, "If Statment");
+    BranchingBlockL(bordx, bordy);
 
     settextstyle(4,0,4);
-    outtextxy(bordx-20,bordy,"Legenda");
-    bordy+=40;
-
-    settextstyle(4,0,3);
-    outtextxy(bordx-250,bordy+20,"Process Block");
-    ProcessBlockL(bordx+75,bordy+25);
-    bordy+=DIMY;
-    bordy+=20;
-
-    outtextxy(bordx-100,bordy+50,"Loop");
-    Normal_LoopL(bordx,bordy,2,L);
-    bordy*=2;
-    bordy+=40;
-
-    outtextxy(bordx-180,bordy,"Reverse L");
-    Reverse_LoopL(bordx,bordy-50,2,L);
-    bordy+=(DIMY*2);
-    bordy+=20;
-
-    outtextxy(bordx-190,bordy+20,"If Statment");
-    BranchingBlockL(bordx,bordy);
-
-    settextstyle(4,0,4);
-    bordy+=100;
-
-
+    bordy += 100;
 }
+
+//Tudor Tescu
 //creates a new variable in the struct above
 void CreateInteger(int value, char name[]) {
     int i = 0;
@@ -235,6 +236,7 @@ void CreateInteger(int value, char name[]) {
         variable[i].name[k] = name[k];
 }
 
+//Tudor Tescu
 //function to check if a certain key is the first part of the line
 int FirstChars(char location[], char key[]) {
     char *p = strstr(location, key);
@@ -254,6 +256,7 @@ int FirstChars(char location[], char key[]) {
     return 1;
 }
 
+//Tudor Tescu
 //function that counts lines. for debug purposes
 void CountLines(int &totalLine, int &codeLine, int &commentLine, char line[]) {
     totalLine++;
@@ -263,6 +266,7 @@ void CountLines(int &totalLine, int &codeLine, int &commentLine, char line[]) {
         codeLine++;
 }
 
+//Tudor Tescu
 //check if a var is part of the struct. returns pos in struct if found, (-1) if not found.
 int CheckVar(data vars[], char key[]) {
     //printf("/////////////////////////////////\n");
@@ -276,6 +280,7 @@ int CheckVar(data vars[], char key[]) {
     return -1;
 }
 
+//Tudor Tescu
 //check if a var is a number and return its positive value. return -1 if not
 int IsNumber(char expression[]) {
     char numbers[] = {"0123456789"};
@@ -305,6 +310,7 @@ int IsNumber(char expression[]) {
     return -1;
 }
 
+//Tudor Tescu
 int GetLineType(char line[]) {
     if (FirstChars(line, "if "))
         return 1;
@@ -325,16 +331,7 @@ int GetLineType(char line[]) {
     return 0;
 }
 
-int totalLine = 0, codeLine = 0, commentLine = 0;
-struct node {
-    char line[1023];
-
-    node *left = NULL;
-    node *below = NULL;
-}*treeTop;
-
-void reset(node *&t);
-
+//Tudor Tescu
 void NewNode(node *&n, char value[]) {
     if (!n) {
         n = new node;
@@ -349,6 +346,7 @@ void NewNode(node *&n, char value[]) {
     }
 }
 
+//Tudor Tescu
 void PrintTree(node *t) {
     //printf("help\n");
     if (t)
@@ -363,6 +361,7 @@ void PrintTree(node *t) {
     }
 }
 
+//Tudor Tescu
 void CopyToLeft(node *&location, node *key) {
     if (location->below)
         CopyToLeft(location->below, key);
@@ -370,6 +369,7 @@ void CopyToLeft(node *&location, node *key) {
         location->left = key;
 }
 
+//Tudor Tescu
 node* GetLeft(node *what) {
     if (what->below)
         return GetLeft(what->below);
@@ -377,6 +377,7 @@ node* GetLeft(node *what) {
         return what;
 }
 
+//Tudor Tescu
 int k = 0;
 void MakeTree(node *&crt, char data[][128], int &last) {
     int lPar = 0;
@@ -459,6 +460,7 @@ void MakeTree(node *&crt, char data[][128], int &last) {
 
 int crtLine = 0;
 
+//Tudor Tescu
 int CountConditions (node *t) {
     int conditions = 0;
     while (t) {
@@ -473,238 +475,228 @@ int CountConditions (node *t) {
     return conditions;
 }
 
-void ProcessBlock(int x,int y,int X,int &Y, int &L,node *t) {
-    setlinestyle(0,2,3);
-    line(x,y,x+X,y);
-    line(x,y,x,y+50);
-    line(x+X,y,x+X,y+50);
-    line(x,y+50,x+X,y+50);
+//Fabian Pintea
+void ProcessBlock(int x, int y, int X, int &Y, int &L, node *t) {
+    setlinestyle(0, 2, 3);
+    line(x, y, x+X, y);
+    line(x, y, x, y+50);
+    line(x+X, y, x+X, y+50);
+    line(x, y+50, x+X, y+50);
     L += 50;
-    outtextxy(x+5,y+20,t->line);
-    //y = Y;
+    outtextxy(x+5, y+20, t->line);
     Y += 50;
 }
 
-void ProcessBlock_EMPTY(int x,int y,int X,int Y) {
-    setlinestyle(0,2,3);
-    line(x,y,x+X,y);
-    line(x,y,x,y+50);
-    line(x+X,y,x+X,y+50);
-    line(x,y+50,x+X,y+50);
-    //floodfill(x,y,WHITE);
+//Fabian Pintea
+void ProcessBlock_EMPTY(int x, int y, int X, int Y) {
+    setlinestyle(0, 2, 3);
+    line(x, y, x+X, y);
+    line(x, y, x, y+50);
+    line(x+X, y, x+X, y+50);
+    line(x, y+50, x+X, y+50);
 }
 
-void Normal_Loop(int x,int y,int conditions,int &L,int X,int &Y,int S,node *t) {
-    int c1_x,c1_y,c2_x,c2_y;
-    setlinestyle(0,2,3);
-    c1_x=x+S;     c1_y=y+50;
-    c2_x=x+X;     c2_y=y+50;
+//Fabian Pintea
+void Normal_Loop(int x, int y, int conditions, int &L, int X, int &Y, int S, node *t) {
+    int c1_x, c1_y, c2_x, c2_y;
+    setlinestyle(0, 2, 3);
+    c1_x = x+S;     c1_y = y+50;
+    c2_x = x+X;     c2_y = y+50;
     int copyL = L + 50*(1 + conditions) + (startpy);
     L = L + 50*(1 + conditions);
-    //L += 100
+
     //desenam
-    line(x,y,x+X,y);
-    line(x+X,y,x+X,y+50);
-    line(x+S,y+50,x+X,y+50);
-    line(x,y,x,copyL); //
-    line(x+S,y+50,x+S,copyL); //
-    line(x,copyL,x+S,copyL); //
-    outtextxy(x+10,y+15,t->line);
-    //L -= 100;
+    line(x, y, x+X, y);
+    line(x+X, y, x+X, y+50);
+    line(x+S, y+50, x+X, y+50);
+    line(x, y, x, copyL);
+    line(x+S, y+50, x+S, copyL);
+    line(x, copyL, x+S, copyL);
+    outtextxy(x+10, y+15, t->line);
+
     //desenam conditiile
-    t=t->left->below;
-    for(int i=1;i<=conditions;i++)
-    {
-        line(c2_x,c2_y,c2_x,c2_y+50);
-        line(c2_x,c2_y+50,c1_x,c1_y+50);
+    t = t->left->below;
+    for(int i = 1; i <= conditions; i++) {
+        line(c2_x, c2_y, c2_x, c2_y+50);
+        line(c2_x, c2_y+50, c1_x, c1_y+50);
 
         //CONDITIONS NAME
-        outtextxy(c1_x+10,c1_y+20,t->line);
-        t=t->below;
-        c1_y+=50;   c2_y+=50;
+        outtextxy(c1_x+10, c1_y+20, t->line);
+        t = t->below;
+        c1_y += 50;   c2_y += 50;
         Y += 50;
     }
     Y += 50;
-
-    printf("///////////   L --- %d //////////////", L);
-    //floodfill(x,y,WHITE);
-    //createarea(x,y,x+X,y+Y);
-    //Y -= 100;
-    //L -= 100;
-
-    //L = copyL;
 }
 
-void Reverse_Loop(int x,int y,int conditions,int &L,int X,int &Y,int S,node *t) {
-    int c1_x,c1_y,c2_x,c2_y;
-    c1_x=x+S;     c1_y=y;
-    c2_x=x+X;     c2_y=y;
+//Fabian Pintea
+void Reverse_Loop(int x, int y, int conditions, int &L, int X, int &Y, int S, node *t) {
+    int c1_x, c1_y, c2_x, c2_y;
+    c1_x = x+S;     c1_y = y;
+    c2_x = x+X;     c2_y = y;
     int copyL = L + 50*(1 + conditions) + (startpy);
     L = L + 50*(1 + conditions);
-    setlinestyle(0,2,3);
-    outtextxy(x,y+10,t->line);
+    setlinestyle(0, 2, 3);
+    outtextxy(x, y+10, t->line);
     node *p;
-    p=new node;
-    p=t->left->below;
+    p = new node;
+    p = t->left->below;
+
     //desneam conditiile
-    for(int i=1;i<=conditions;i++)
-    {
-        line(c1_x,c1_y,c2_x,c2_y);
-        line(c2_x,c2_y,c2_x,c2_y+50);
+    for(int i = 1; i <= conditions; i++) {
+        line(c1_x, c1_y, c2_x, c2_y);
+        line(c2_x, c2_y, c2_x, c2_y+50);
+
         //CONDITIONS NAME
-        outtextxy(c1_x+10,c1_y+20,p->line);
-        p=p->below;
-        c1_y+=50;   c2_y+=50;
+        outtextxy(c1_x+10, c1_y+20, p->line);
+        p = p->below;
+        c1_y += 50;   c2_y += 50;
         Y += 50;
     }
     //desenam
-    line(c1_x,c1_y,c2_x,c2_y);
-    line(x,y,x,copyL);
-    line(x,copyL,x+X,copyL);
-    line(x+X,copyL,x+X,copyL);
-    line(x+X,copyL,x+X,copyL-50);
-    line(x,y,x+S,y);
-    line(x+S,copyL-50,x+S,y);
-    outtextxy(x+5,copyL-30,p->line);
+    line(c1_x, c1_y, c2_x, c2_y);
+    line(x, y, x, copyL);
+    line(x, copyL, x+X, copyL);
+    line(x+X, copyL, x+X, copyL);
+    line(x+X, copyL, x+X, copyL-50);
+    line(x, y, x+S, y);
+    line(x+S, copyL-50, x+S, y);
+    outtextxy(x+5, copyL-30, p->line);
 
     Y += 50;
-    //createarea(x,y,x+X,y+Y);
 }
 
-void True_Triangle(int x,int y,int Ax,int Ay,int X,int Y,int C1,int C2) {
-    int Mx,My;
-    setlinestyle(0,2,3);
-    line(x,y,x,y+50);
-    line(x,y+50,x+C1,y+50);
-    line(x,y,x+C1,y+50);
-    //Mx= Ax+C2;  My=Ay+C2;
+//Fabian Pintea
+void True_Triangle(int x, int y, int Ax, int Ay, int X, int Y, int C1, int C2) {
+    int Mx, My;
+    setlinestyle(0, 2, 3);
+    line(x, y, x, y+50);
+    line(x, y+50, x+C1, y+50);
+    line(x, y, x+C1, y+50);
 }
 
-void False_Triangle(int x,int y,int Bx,int By,int X,int Y,int C1,int C2) {
-    int Mx,My;
-    setlinestyle(0,2,3);
-    line(x+X,y,x+X,y+50);
-    line(x+X,y+50,x+C1,y+50);
-    line(x+C1,y+50,x+X,y);
-    //Mx= Bx-(C2*2);  My=By+C2;
+//Fabian Pintea
+void False_Triangle(int x, int y, int Bx, int By, int X, int Y, int C1, int C2) {
+    int Mx, My;
+    setlinestyle(0, 2, 3);
+    line(x+X, y, x+X, y+50);
+    line(x+X, y+50, x+C1, y+50);
+    line(x+C1, y+50, x+X, y);
 }
 
-void IFF(int x,int &y,int &Y,int C1,int L,node *t) {
-    ProcessBlock(x,y+50,C1,Y,L,t);
+//Fabian Pintea
+void IFF(int x, int &y, int &Y, int C1, int L, node *t) {
+    ProcessBlock(x, y+50, C1, Y, L, t);
 }
 
-void ELSEF(int x,int &y,int &Y,int C1,int L,node *t) {
-    ProcessBlock(C1+x,y+50,C1,Y,L,t);
+//Fabian Pintea
+void ELSEF(int x, int &y, int &Y, int C1, int L, node *t) {
+    ProcessBlock(C1+x, y+50, C1, Y, L, t);
 }
 
-void ELSEFE(int x,int y,int Y,int C1) {
-    ProcessBlock_EMPTY(C1+x,y+50,C1,y+100);
+//Fabian Pintea
+void ELSEFE(int x, int y, int Y, int C1) {
+    ProcessBlock_EMPTY(C1+x, y+50, C1, y+100);
 }
 
-void IFFE(int x,int y,int Y,int C1) {
-    ProcessBlock_EMPTY(x,y+50,C1,y+100);
+//Fabian Pintea
+void IFFE(int x, int y, int Y, int C1) {
+    ProcessBlock_EMPTY(x, y+50, C1, y+100);
 }
 
-void casesIF(int x,int &y,int X,int &Y,int conditionsIF,int conditionsELSE,int C1,int C2,int &L,node *t,node *p) {
-    if(conditionsIF>=conditionsELSE) {
-        for(conditionsIF;conditionsIF>=1;conditionsIF--) {
-            //settextstyle(4,0,1);
+//Fabian Pintea
+void casesIF(int x, int &y, int X, int &Y, int conditionsIF, int conditionsELSE, int C1, int C2, int &L, node *t, node *p) {
+    if(conditionsIF >= conditionsELSE) {
+        for(conditionsIF; conditionsIF >= 1; conditionsIF--) {
             y = Y-150;
-            IFF(x,y,Y,C1,L,t);
+            IFF(x, y, Y, C1, L, t);
             printf("///////////IFF    Y  %d /////////////\n", Y);
 
-            if(conditionsELSE>=1) {
-                ELSEF(x,y,Y,C1,L,p);
+            if(conditionsELSE >= 1) {
+                ELSEF(x, y, Y, C1, L, p);
                 Y -= 50;
                 conditionsELSE--;
             }
             else {
-                ELSEFE(x,y,Y,C1);
+                ELSEFE(x, y, Y, C1);
                 Y -= 50;
             }
             if(t->below)
-                t=t->below;
+                t = t->below;
             if(p->below)
-                p=p->below;
-            //y = Y;
-            //Y=Y+50;
-            //L=L+50;
+                p = p->below;
         }
     }
     else if (conditionsELSE > conditionsIF) {
         for(conditionsELSE; conditionsELSE >= 1; conditionsELSE--) {
             y = Y-150;
-            //settextstyle(4,0,1);
 
-            ELSEF(x,y,Y,C1,L,p);
+            ELSEF(x, y, Y, C1, L, p);
             printf("///////////ELSEF   y %d --- Y %d /////////////\n", y, Y);
 
-            if(conditionsIF>=1) {
-                IFF(x,y,Y,C1,L,t);
+            if(conditionsIF >= 1) {
+                IFF(x, y, Y, C1, L, t);
                 Y -= 50;
                 conditionsIF--;
             }
            else {
-                IFFE(x,y,Y,C1);
+                IFFE(x, y, Y, C1);
                 Y -= 50;
             }
             if(t->below)
-                t=t->below;
+                t = t->below;
             if(p->below)
-                p=p->below;
-            //y = Y;
-            //Y = Y + 50;
-            //L=L+50;
+                p = p->below;
         }
     }
     Y += 50;
 }
 
-void BranchingBlock(int x,int y,int X,int &Y,int conditionsIF,int C1,int C2,int &L,node *t) {
-    int Ax,Ay,Bx,By,copyL,conditionsELSE=0;
-    Ax=x;     Ay=y;
-    Bx=x+X;   By=y;
-    setlinestyle(0,2,3);
-    line(x,y,x+X,y);
-    True_Triangle(x,y,Ax,Ay,X,Y,X/2,C2);
-    False_Triangle(x,y,Bx,By,X,Y,X/2,C2);
-    //Y += 50;
-    outtextxy(x+175,y+15,t->line);
-    conditionsELSE=CountConditions(t->below->left);
-    node *p;
-    p=new node;
+//Fabian Pintea si Tudor Tescu
+void BranchingBlock(int x, int y, int X, int &Y, int conditionsIF, int C1, int C2, int &L, node *t) {
+    int Ax, Ay, Bx, By, copyL, conditionsELSE = 0;
+    Ax = x;     Ay = y;
+    Bx = x+X;   By = y;
+    setlinestyle(0, 2, 3);
+    line(x, y, x+X, y);
+    True_Triangle(x, y, Ax, Ay, X, Y, X/2, C2);
+    False_Triangle(x, y, Bx, By, X, Y, X/2, C2);
 
+    outtextxy(x+175, y+15, t->line);
+    conditionsELSE = CountConditions(t->below->left);
+    node *p;
+    p = new node;
+
+    //Tudor Tescu - asistenta in parcurgerea arborelui, doar acest if
     if (t) {
         if (t->below) {
-            p=t->below;//else
+            p = t->below;//else
             if (t->below->left) {
-                p=t->below->left;
+                p = t->below->left;
                 if (t->below->left->below)
                     p = t->below->left->below;
             }
         }
     }
-    t=t->left->below;//if
+    t = t->left->below;//if
 
-    casesIF(x,y,X,Y,conditionsIF,conditionsELSE,X/2,C2,L,t,p);
+
+    casesIF(x, y, X, Y, conditionsIF, conditionsELSE, X/2, C2, L, t, p);
     Y += 50;
     if (conditionsIF >= conditionsELSE)
-        L=L+(50*(1+conditionsIF));
+        L = L + (50*(1 + conditionsIF));
     else if (conditionsIF < conditionsELSE)
-        L=L+(50*(1+conditionsELSE));
-
-    //L=y+(50*(conditions));
-    //copyL=L;
-    //L = copyL;
+        L = L + (50*(1 + conditionsELSE));
 }
 
+//Fabian Pintea si Tudor Tescu
 void DrawNS(node *t) {
     printf("X %d    Y %d\n", X, Y);
 
     menu(true);
     legenda(L);
-    int S = SPL,C1=CT1,C2=CT2;
-    settextstyle(1,0,1);
+    int S = SPL,C1 = CT1, C2 = CT2;
+    settextstyle(1, 0, 1);
     if (t) {
         if (t->line[0] != '\0') {
             if (GetLineType(t->line) == 0) {
@@ -749,12 +741,14 @@ void DrawNS(node *t) {
     menu();
 }
 
+//Fabian Pintea
 void ResetCoord() {
     Y = 250+startpy-100;
     X = 500+startpx-100;
     L = 0;
 }
 
+//Fabian Pintea si Tudor Tescu
 void opening() {
     cleardevice();
     setfillstyle(SOLID_FILL, WHITE);
@@ -763,27 +757,24 @@ void opening() {
     setcolor(WHITE);
     readimagefile("images/opening.jpg", 0, 0, windowx, windowy);
     settextstyle(6, 0, 6);
-    outtextxy(1380/3 - 50 ,150,"Nassi-Schneiderman Diagram");
+    outtextxy(1380/3 - 50, 150, "Nassi-Schneiderman Diagram");
 
     //introduceti o diagrama
-    //rectangle(300, 100, 1380, 300);
     outtextxy(1380/2 - 125, 450, "Introduceti un cod");
 
     //diagrama anterioara
-    //rectangle(300, 400, 1380, 600);
     outtextxy(1380/2 - 60, 550, "Codul anterior");
 
     //curiozitati
-    //rectangle(300, 700, 1380, 900);
     outtextxy(1380/2 - 20, 650, "Informatii");
 }
 
+//Tudor Tescu
 void InitAlg() {
     reset(treeTop);
-    int C1=CT1,C2=CT2,S=SPL;
+    int C1 = CT1, C2 = CT2, S = SPL;
     FILE *input = fopen("input.txt", "r");
-    floodfill(0,0,WHITE);
-    //menu();
+    floodfill(0, 0, WHITE);
 
     if (!input) {
         printf("Error - input file empty");
@@ -1152,6 +1143,8 @@ void InitAlg() {
     closegraph();
 }
 
+//Tudor Tescu
+//reseteaza arborele in memorie
 void reset(node *&t) {
     if (t) {
         if (t->left) {
@@ -1165,6 +1158,8 @@ void reset(node *&t) {
     }
 }
 
+//Tudor Tescu si Fabian Pintea
+//initializarea alrogitmului. de aici pleaca tot.
 void start() {
     ResetCoord();
     reset(treeTop);
@@ -1200,6 +1195,7 @@ void start() {
     }
 }
 
+//Fabian Pintea
 void info() {
     cleardevice();
     setfillstyle(SOLID_FILL, WHITE);
@@ -1219,12 +1215,9 @@ void info() {
             start();
         }
     }
-
-    //floodfill(125, 60, BLACK);
-    //floodfill(60, 100, BLACK);
-
-
 }
+
+//Tudor Tescu si Fabian Pintea
 int main()
 {
     initwindow(windowx, windowy, "Nassi-Schneiderman Diagram", 120);
@@ -1232,4 +1225,4 @@ int main()
 
     return 0;
 }
-//window 1680x1000
+//dimensiune fereastra 1680x1000
