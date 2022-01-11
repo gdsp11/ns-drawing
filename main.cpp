@@ -69,6 +69,7 @@ void Normal_LoopL(int x, int y, int conditions, int &L) {
     line(x+SPL, y+DIMY, x+SPL, L);
     line(x, L, x+SPL, L);
 
+    //desenam conditiile din loop
     for(int i = 1; i <= conditions; i++) {
         line(c2_x, c2_y, c2_x, c2_y+DIMY);
         line(c2_x, c2_y+DIMY, c1_x, c1_y+DIMY);
@@ -85,6 +86,7 @@ void Reverse_LoopL(int x, int y, int conditions, int &L) {
     c2_x = x+X;         c2_y=y;
     L = y + (50*(1 + conditions));
     setlinestyle(0, 2, 3);
+    //desenam conditiile din loop
     for(int i = 1; i <= conditions; i++) {
         line(c1_x, c1_y, c2_x, c2_y);
         line(c2_x, c2_y, c2_x, c2_y+DIMY);
@@ -92,6 +94,7 @@ void Reverse_LoopL(int x, int y, int conditions, int &L) {
         c1_y += DIMY;   c2_y += DIMY;
 
     }
+
     line(c1_x, c1_y, c2_x, c2_y);
     line(x, y, x, L);
     line(x, L, x+X, L);
@@ -110,7 +113,7 @@ void True_TriangleL(int x, int y, int Ax, int Ay) {
     line(x, y, x, y+DIMY);
     line(x, y+DIMY, x+T1, y+DIMY);
     line(x, y, x+T1, y+DIMY);
-    Mx = Ax+CT2;  My = Ay+CT2;
+    Mx = Ax+CT2;  My = Ay+CT2; //calculam mijloacele
     settextstyle(4, 0, 1);
     outtextxy(Mx, My, text);
 }
@@ -124,7 +127,7 @@ void False_TriangleL(int x, int y, int Bx, int By) {
     line(x+X, y, x+X, y+DIMY);
     line(x+X, y+DIMY, x+T1, y+DIMY);
     line(x+T1, y+DIMY, x+X, y);
-    Mx = Bx - (CT2*2);  My = By+CT2;
+    Mx = Bx - (CT2*2);  My = By+CT2; //calculam mijloacele
     settextstyle(4, 0, 1);
     outtextxy(Mx, My, text);
 }
@@ -138,13 +141,15 @@ void BranchingBlockL(int x, int y) {
 
     setlinestyle(0, 2, 3);
     line(x, y, x+X, y);
-    True_TriangleL(x, y, Ax, Ay);
-    False_TriangleL(x, y, Bx, By);
+
+    True_TriangleL(x, y, Ax, Ay);   //if triangle
+    False_TriangleL(x, y, Bx, By);  //else triangle
 }
 
 //Fabian Pintea
 //main menu
-int windowx = 1680, windowy = 1000;
+int windowx = 1680, windowy = 1000; //window default resolution
+
 void menu(bool isInitial = false) {
     if (isInitial) {
         settextstyle(4, 0, 4);
@@ -807,7 +812,7 @@ void InitAlg() {
             //IGNORE LINE
         }//check if an int variable is defined
         else if (FirstChars(linie, "float ")) {
-            printf("Commented line %d\n", totalLine);//extract the variable name
+            printf("Declared float on line %d\n", totalLine);//extract the variable name
             char name[16] = {0};
             int i = 6, k = 0;
             while(i < strlen(linie)-1) {
@@ -824,7 +829,7 @@ void InitAlg() {
             }
 
             CreateInteger(1, name);
-            printf("Commented line %d\n", totalLine);
+            printf("Declared unsigned int line %d\n", totalLine);
         }
         else if (FirstChars(linie, "double ")) {//extract the variable name
             char name[16] = {0};
@@ -834,7 +839,7 @@ void InitAlg() {
             }
 
             CreateInteger(1, name);
-            printf("Commented line %d\n", totalLine);
+            printf("Declared double on line %d\n", totalLine);
         }
         else if (FirstChars(linie, "int ")) {
             printf("Declared int on line %d\n", totalLine);
@@ -974,19 +979,7 @@ void InitAlg() {
     //aici facem o parcurgere left, root
 
 
-
-    /*
-    if(ismouseclick(WM_LBUTTONDBLCLK))
-    {
-        getmouseclick(WM_LBUTTONDBLCLK, x, y);
-        cout<<"Mouse clicked at"<<endl;
-        cout<<"x="<<x<<" "<<"y="<<y;
-        //click(x,y);
-        //showarea();
-    }
-    */
-
-    /*
+    /*Pintea Fabian
     Testing purposes
     ProcessBlock(startpx+75,startpy+25);
     startpy+=DIMY;
