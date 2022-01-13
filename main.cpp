@@ -978,36 +978,7 @@ void InitAlg() {
     PrintTree(treeTop);
     printf("\n\n\n///////////////////////////////\n\n\n\n");
 
-    //aici facem o parcurgere left, root
-
-
-    /*Pintea Fabian
-    Testing purposes
-    ProcessBlock(startpx+75,startpy+25);
-    startpy+=DIMY;
-    Normal_Loop(startpx,startpy,2,L);
-    startpy*=2;
-    ProcessBlock(startpx+75,startpy+25);
-    startpy+=DIMY;
-    ProcessBlock(startpx+75,startpy+25);
-    startpy+=DIMY;
-    Reverse_Loop(startpx,startpy,2,L);*/
-
-
-    //Individual display
-
-    //ProcessBlock(startpx,startpy,X,Y);
-    //Normal_Loop(startpx+L, startpy+L, 3, L, X, Y, S);
-    //Normal_Loop(startpx,startpy,2,L,X,Y,S);
-    //Reverse_Loop(startpx,startpy,2,L,X,Y,S);
-    //BranchingBlock(startpx,startpy,X,Y,C1,C2);
-
-
-    //search in file
-    //simple,if,else,while,for,etc.
-    //while reading code->display blocks
-    //if ( for in for ) modify X and Y ( S AND C1,C2 if necesarry), startpx,startpy
-    //else return to X=DIMX,Y=DIMY,S=SPL,C1=CT1,C2=CT2
+    //Pintea Fabian
     printf("\n///////////// DRAWING DEBUG ////////////\n\n");
     settextstyle(0, 0, 2);
 
