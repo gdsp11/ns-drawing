@@ -1062,6 +1062,8 @@ void InitAlg() {
             startpx = DEFAULT_X;
             startpy = DEFAULT_Y;
             Beep(750, 100);
+            Sleep(25);
+            Beep(750, 75);
             printf("pressed RESET  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
             ResetCoord();
@@ -1102,6 +1104,8 @@ void InitAlg() {
         else if (mouseX >= 1070 && mouseY >= 70 && mouseX <= 1120 && mouseY <= 120) { //exit
             cleardevice();
             Beep(750, 100);
+            Sleep(50);
+            Beep(500, 75);
             start();
             return ;
         }
@@ -1185,7 +1189,7 @@ void info() {
         int mouseY = 0;
         getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
         if (mouseX >= 35 && mouseX <= 155 && mouseY >= 850 && mouseY <= 970) {
-            Beep(750, 100);
+            Beep(500, 100);
             cleardevice();
             start();
         }
