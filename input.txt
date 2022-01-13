@@ -13,17 +13,21 @@ do
 } while (x == y)
 while (x == y)
 {
-    printf ("hi")
+    printf ("hiii")
+    printf ("hiii")
+    printf ("hiii")
 }
 if (x == y)
 {
-    printf ("yay")
+    printf ("help1")
+    printf ("help2")
+    printf ("help3")
+    printf ("help4")
+    printf ("help5")
+    printf ("help6")
+    printf ("help7")
+    printf ("help8")
 }
-else
-{
-    printf ("not yay")
-}
-
 printf ("goodbye!")
 
 printf ("goodbye!")

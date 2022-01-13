@@ -4,6 +4,7 @@
 //#include <graphics.h>
 //#include <winbgim.h>
 #include <math.h>
+#include <windows.h>
 using namespace std;
 
 //Tudor Tescu
@@ -616,6 +617,7 @@ void casesIF(int x, int &y, int X, int &Y, int conditionsIF, int conditionsELSE,
             y = Y-150;
             IFF(x, y, Y, C1, L, t);
             printf("///////////IFF    Y  %d /////////////\n", Y);
+            printf("conditions - %d\n\n", conditionsIF);
 
             if(conditionsELSE >= 1) {
                 ELSEF(x, y, Y, C1, L, p);
@@ -624,7 +626,7 @@ void casesIF(int x, int &y, int X, int &Y, int conditionsIF, int conditionsELSE,
             }
             else {
                 ELSEFE(x, y, Y, C1);
-                Y -= 50;
+                //Y -= 50;
             }
             if(t->below)
                 t = t->below;
@@ -646,7 +648,7 @@ void casesIF(int x, int &y, int X, int &Y, int conditionsIF, int conditionsELSE,
             }
            else {
                 IFFE(x, y, Y, C1);
-                Y -= 50;
+                //Y -= 50;
             }
             if(t->below)
                 t = t->below;
@@ -1078,6 +1080,7 @@ void InitAlg() {
         if (mouseX >= 970 && mouseX <= 1040 && mouseY >= 760 && mouseY <= 830) { //up
             //if (startpy - dif > 99)
             startpy -= dif;
+            Beep(750, 100);
             printf("pressed UP  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
             ResetCoord();
@@ -1087,6 +1090,7 @@ void InitAlg() {
         else if (mouseX >= 970 && mouseX <= 1040 && mouseY >= 840 && mouseY <= 910) { //reset
             startpx = DEFAULT_X;
             startpy = DEFAULT_Y;
+            Beep(750, 100);
             printf("pressed RESET  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
             ResetCoord();
@@ -1095,6 +1099,7 @@ void InitAlg() {
         }
         else if (mouseX >= 970 && mouseX <= 1040 && mouseY >= 920 && mouseY <= 990) { //down
             startpy += dif;
+            Beep(750, 100);
             printf("pressed DOWN  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
             ResetCoord();
@@ -1104,6 +1109,7 @@ void InitAlg() {
         else if (mouseX >= 890 && mouseY >= 840 && mouseX <= 960 && mouseY <= 910) { //left
             startpx -= dif;
             X = startpx + 500;
+            Beep(750, 100);
             printf("pressed LEFT  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
             cleardevice();
             ResetCoord();
@@ -1114,6 +1120,7 @@ void InitAlg() {
             if (startpx < 200) {
                 startpx += dif;
                 X = startpx + 500;
+                Beep(750, 100);
                 printf("pressed RIGHT  ----  startpx %d  ----  startpy %d\n", startpx, startpy);
                 cleardevice();
                 ResetCoord();
@@ -1123,6 +1130,7 @@ void InitAlg() {
         }
         else if (mouseX >= 1070 && mouseY >= 70 && mouseX <= 1120 && mouseY <= 120) { //exit
             cleardevice();
+            Beep(750, 100);
             start();
             return ;
         }
@@ -1173,15 +1181,18 @@ void start() {
         getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
         if (mouseX >= 300 && mouseX <= 1380) {
             if (mouseY >= 400 && mouseY <= 500) {
+                Beep(750, 100);
                 system("notepad.exe input.txt");
                 cleardevice();
                 InitAlg();
             }
             else if (mouseY >= 501 && mouseY <= 600) {
+                Beep(750, 100);
                 cleardevice();
                 InitAlg();
             }
             else if (mouseY >= 601 && mouseY <= 700) {
+                Beep(750, 100);
                 info();
             }
         }
@@ -1202,8 +1213,8 @@ void info() {
         int mouseX = 0;
         int mouseY = 0;
         getmouseclick(WM_LBUTTONDOWN, mouseX, mouseY);
-
         if (mouseX >= 35 && mouseX <= 155 && mouseY >= 850 && mouseY <= 970) {
+            Beep(750, 100);
             cleardevice();
             start();
         }
