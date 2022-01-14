@@ -792,7 +792,7 @@ void InitAlg() {
     char linie[1023];
     char code[1024][128] = {0};
     while (fgets(linie, sizeof(linie), input)) {
-        if (strcmp(linie, "\0") && strcmp(linie, "\n")) {
+        if (strcmp(linie, "\0") && strcmp(linie, "\n") && !FirstChars(linie, "//")) {
             strcpy(code[k], linie);
             k++;
         }
